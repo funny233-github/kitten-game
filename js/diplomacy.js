@@ -308,7 +308,7 @@ dojo.declare("classes.managers.DiplomacyManager", null, {
 			this.game.diplomacyTab.visible = true;
 			this.game.render();
 
-			this.game.msg("An emissary of " + race.title + " comes to your village", "notice");
+			this.game.msg($I.fmt("msg.trade.emissary", {race: race.title}, "An emissary of {race} comes to your village"), "notice");
 		}
 	},
     //------------ IDK, silly gimmickish stuff -----------
@@ -444,14 +444,14 @@ dojo.declare("com.nuclearunicorn.game.ui.TradeButton", com.nuclearunicorn.game.u
 
 		if (race.attitude == "hostile" && this.game.rand(100) - standingRatio >= race.standing * 100){	//the less you roll the better
 			if (!suppressMessages){
-				this.game.msg( race.title + " hate you for no reason", null, "trade");
+				this.game.msg( $I.fmt("msg.trade.hate", {race: race.title}, "{race} hate you for no reason"), null, "trade");
 			}
 			return tradeRes;
 		}
 
 		if (race.attitude == "friendly" && this.game.rand(100) - standingRatio/2 <= race.standing * 100){	//confusing part, low standing is ok for friendly races
 			if (!suppressMessages){
-				this.game.msg( race.title + " think your kittens are adorable", null, "trade");
+				this.game.msg( $I.fmt("msg.trade.adorable", {race: race.title}, "{race} think your kittens are adorable"), null, "trade");
 			}
 			tradeRatioAttitude = 0.25;
 		}
@@ -564,20 +564,23 @@ dojo.declare("com.nuclearunicorn.game.ui.TradeButton", com.nuclearunicorn.game.u
 			for (var res in yieldResTotal){
 				var amt = this.game.resPool.addResEvent(res, yieldResTotal[res]);
 				if (amt > 0){
-					if (res == "blueprint"){
-						this.game.msg("You've got " + this.game.getDisplayValueExt(amt) + " " + res + (amt > 1 ? "s" : "") + "!", "notice", "trade", true);
-					} else if (res == "titanium"){
-						this.game.msg("You've got " + this.game.getDisplayValueExt(amt) + " " + res + "!", "notice", "trade", true);
-					} else {
-						var resPool = this.game.resPool.get(res);
-						var name = resPool.title || res;
-						this.game.msg("You've got " + this.game.getDisplayValueExt(amt) + " " + name, null, "trade", true);
+					var resPool = this.game.resPool.get(res);
+					var name = (resPool && (resPool.title || resPool.name)) || res;
+					if (res == "blueprint" && amt > 1){
+						name += "s";
 					}
+					var type = (res == "blueprint" || res == "titanium") ? "notice" : null;
+					this.game.msg($I.fmt("msg.trade.got", {
+						amount: this.game.getDisplayValueExt(amt),
+						resource: name
+					}, "You've got {amount} {resource}!"), type, "trade", true);
 					output = true;
 				}
 			}
-			var orthographe = amtTrade > 1 ? "s" : "";
-			this.game.msg("You have sent " + amtTrade + " trade caravan" + orthographe, null, "trade");
+			this.game.msg($I.fmt("msg.trade.sent", {
+				amount: amtTrade,
+				unit: amtTrade > 1 ? "trade caravans" : "trade caravan"
+			}, "You have sent {amount} {unit}"), null, "trade");
 		}
 
 		if (yieldResTotal && !output){
@@ -732,9 +735,9 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Diplomacy", com.nuclearunicorn.game
 
 
 
-		var expandAll = dojo.create("a", { innerHTML: "Expand all", href: "#" }, expandDiv);
+		var expandAll = dojo.create("a", { innerHTML: $I.ui("Expand all"), href: "#" }, expandDiv);
 		dojo.create("span", { innerHTML: " | " }, expandDiv );
-		var collapseAll = dojo.create("a", { innerHTML: "Collapse all", href: "#" }, expandDiv);
+		var collapseAll = dojo.create("a", { innerHTML: $I.ui("Collapse all"), href: "#" }, expandDiv);
 
 		for (var i = 0; i< races.length; i++){
 			var race = races[i];
@@ -775,7 +778,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Diplomacy", com.nuclearunicorn.game
 			var buys = race.buys[0];
 			var res = this.game.resPool.get(buys.name);
 			dojo.create("div", {
-				innerHTML: "<span class='buys'>Buys: </span>" + (res.title || res.name) + " <span class='ammount'>" + buys.val + "</span>"
+				innerHTML: "<span class='buys'>" + $I.ui("Buys: ") + "</span>" + (res.title || res.name) + " <span class='ammount'>" + buys.val + "</span>"
 			}, leftColumn);
 
 			for (var j =0; j< race.sells.length; j++){
@@ -803,7 +806,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Diplomacy", com.nuclearunicorn.game
 						max = val * sratio + val * sratio * s.delta/2;
 					}
 
-					var prefix = ( j == 0) ? "<span class='sells'>Sells: </span>" : "<span class='sells'></span>";
+					var prefix = ( j == 0) ? "<span class='sells'>" + $I.ui("Sells: ") + "</span>" : "<span class='sells'></span>";
 					var div = dojo.create("div", {
 							innerHTML: prefix + (res.title || res.name) + " <span class='ammount'>"
 								+ this.game.getDisplayValueExt(min, false, false, 0) + " - "
@@ -859,18 +862,18 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Diplomacy", com.nuclearunicorn.game
 
 					var hint = "";
 					if (!dip.get("nagas").unlocked){
-						hint = "Maybe you are not cultural enough.";
+						hint = $I.ui("Maybe you are not cultural enough.");
 					} else if (!dip.get("zebras").unlocked){
-						hint = "Maybe you should try to reach another continents.";
+						hint = $I.ui("Maybe you should try to reach another continents.");
 					} else if (!dip.get("spiders").unlocked){
-						hint = "Maybe you are not scientific enough.";
+						hint = $I.ui("Maybe you are not scientific enough.");
 					} else if (!dip.get("dragons").unlocked){
-						hint = "Maybe you should be more technologically advanced.";
+						hint = $I.ui("Maybe you should be more technologically advanced.");
 					} else {
-						hint = "Maybe there are no more civilizations left?";	//AHAHA NO
+						hint = $I.ui("Maybe there are no more civilizations left?");	//AHAHA NO
 					}
 
-					btn.game.msg("Your explorers failed to find anyone. *** " + hint + " ***");
+					btn.game.msg($I.fmt("msg.trade.explorersFailed", {hint: hint}, "Your explorers failed to find anyone. *** {hint} ***"));
 					btn.game.resPool.addResEvent("manpower", 950);
 				}
 
@@ -900,8 +903,8 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Diplomacy", com.nuclearunicorn.game
 
 		if (this.leviathansInfo) {
 			var leviathans = this.game.diplomacy.get("leviathans");
-			this.leviathansInfo.innerHTML = "Energy: " + ( leviathans.energy || "N/A" ) +
-				"<br />Time to leave: " + this.game.toDisplayDays(leviathans.duration);
+			this.leviathansInfo.innerHTML = $I.ui("Energy: ") + ( leviathans.energy || $I.ui("N/A") ) +
+				$I.ui("<br />Time to leave: ") + this.game.toDisplayDays(leviathans.duration);
 		}
 		this.updateTab();
 	},

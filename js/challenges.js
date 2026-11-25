@@ -120,7 +120,7 @@ dojo.declare("classes.managers.ChallengesManager", com.nuclearunicorn.core.TabMa
 		if (challenge == this.currentChallenge){
 			this.getChallenge(challenge).researched = true;
 			this.currentChallenge = null;
-			this.game.msg("Congratulations ! You achieve the challenge " + this.getChallenge(challenge).label + ".");
+			this.game.msg($I.fmt("msg.chal.completed", {challenge: this.getChallenge(challenge).label}, "Congratulations ! You achieve the challenge {challenge}."));
 		}
 	}
 });
@@ -137,20 +137,20 @@ dojo.declare("classes.ui.ChallengeBtn", com.nuclearunicorn.game.ui.BuildingBtn, 
 
 	getDescription: function() {
 		if (this.game.bld.get("chronosphere").val > 0) {
-			var msgChronosphere = " You won't gain reset bonus from chronospheres.";
-			msgChronosphere += this.getMetadata().name == "ironWill" ? "<br />WARNING: the reset bonus from chronospheres will automatically disable IW." : "";
+			var msgChronosphere = $I.ui(" You won't gain reset bonus from chronospheres.");
+			msgChronosphere += this.getMetadata().name == "ironWill" ? $I.ui("<br />WARNING: the reset bonus from chronospheres will automatically disable IW.") : "";
 		} else {
 			var msgChronosphere = "";
 		}
-		return this.inherited(arguments) + "<br />Gain: " + this.getMetadata().effectDesc + "<br /><br />Your game will be reset in order to enable this challenge." + msgChronosphere;
+		return this.inherited(arguments) + $I.ui("<br />Gain: ") + this.getMetadata().effectDesc + $I.ui("<br /><br />Your game will be reset in order to enable this challenge.") + msgChronosphere;
 	},
 
 	getName: function(){
 		var meta = this.getMetadata();
 		if (meta.name == this.game.challenges.currentChallenge) {
-			return meta.label + " (Current)";
+			return meta.label + " " + (window.$I ? $I.ui("(Current)") : "(Current)");
 		} else if (meta.researched){
-			return meta.label + " (Complete)";
+			return meta.label + " " + (window.$I ? $I.ui("(Complete)") : "(Complete)");
 		} else {
 			return meta.label;
 		}
@@ -170,7 +170,7 @@ dojo.declare("classes.ui.ChallengeBtn", com.nuclearunicorn.game.ui.BuildingBtn, 
 
 	onClick: function(){
 		if (this.getMetadata().name != this.game.challenges.currentChallenge && (this.enabled || this.game.devMode)){
-			if (confirm("Are you sure you want to start this challenge by resetting the game ?")) {
+			if (confirm($I.ui("Are you sure you want to start this challenge by resetting the game ?"))) {
 				// Set the challenge for after reset
 				if (this.getMetadata().name == "ironWill") {
 					this.game.challenges.currentChallenge = null;

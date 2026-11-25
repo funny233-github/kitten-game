@@ -191,13 +191,13 @@ dojo.declare("classes.managers.VillageManager", com.nuclearunicorn.core.TabManag
 	getLeaderDescription: function(job) {
 		switch (job) {
 			case "engineer":
-				return "Crafting bonus";
+				return $I.ui("Crafting bonus");
 			case "merchant":
-				return "Trading bonus";
+				return $I.ui("Trading bonus");
 			case "manager":
-				return "Hunting bonus";
+				return $I.ui("Hunting bonus");
 			case "scientist":
-				return "Science prices bonus";
+				return $I.ui("Science prices bonus");
 			case "wise":
 				return "Religion bonus";
 			default:
@@ -268,10 +268,14 @@ dojo.declare("classes.managers.VillageManager", com.nuclearunicorn.core.TabManag
 				if (starvedKittens > 0 && this.deathTimeout <= 0){
 					starvedKittens = this.sim.killKittens(starvedKittens);
 
+					var deadParams = {
+						count: starvedKittens,
+						unit: starvedKittens === 1 ? "kitten" : "kittens"
+					};
 					if (resDiff < 0) {
-						this.game.msg(starvedKittens + ( starvedKittens === 1 ? " kitten " : " kittens " ) + "starved to death.");
+						this.game.msg($I.fmt("msg.vill.starved", deadParams, "{count} {unit} starved to death."));
 					} else {
-						this.game.msg(starvedKittens + ( starvedKittens === 1 ? " kitten " : " kittens " ) + "froze to death.");
+						this.game.msg($I.fmt("msg.vill.froze", deadParams, "{count} {unit} froze to death."));
 					}
 					this.game.deadKittens += starvedKittens;
 					this.deathTimeout = this.game.rate * 5;	//5 seconds
@@ -636,18 +640,23 @@ dojo.declare("classes.managers.VillageManager", com.nuclearunicorn.core.TabManag
 		}
 
 		if (totalYield.unicorns > 0){
-			this.game.msg("You got " + (Math.round(totalYield.unicorns) === 1 ? "a unicorn!" : + this.game.getDisplayValueExt(totalYield.unicorns) + " unicorns!"), "important", "hunt");
+			var unicornCount = Math.round(totalYield.unicorns);
+			this.game.msg($I.fmt("msg.vill.unicornHunt", {
+				count: this.game.getDisplayValueExt(totalYield.unicorns),
+				amount: unicornCount === 1 ? "a" : this.game.getDisplayValueExt(totalYield.unicorns),
+				unit: unicornCount === 1 ? "unicorn" : "unicorns"
+			}, "You got {amount} {unit}!"), "important", "hunt");
 		}
-		var msg = "Your hunters have returned";
-		if (squads > 1) {
-			msg += " from " + squads + " hunts";
-		}
-		msg += ". +" + this.game.getDisplayValueExt(totalYield.furs) + " furs";
+		var msg = $I.fmt("msg.hunt.returned", {
+			hunts: squads > 1 ? $I.fmt("msg.hunt.hunts", {count: squads}, " from {count} hunts") : "",
+			furs: this.game.getDisplayValueExt(totalYield.furs)
+		}, "Your hunters have returned{hunts}. +{furs} furs");
+
 		if (totalYield.ivory > 0){
-			msg += ", +" + this.game.getDisplayValueExt(totalYield.ivory) + " ivory";
+			msg += $I.sep() + $I.fmt("msg.hunt.ivory", {amount: this.game.getDisplayValueExt(totalYield.ivory)}, "+{amount} ivory");
 		}
 		if (totalYield.gold > 0){
-			msg += ", +" + this.game.getDisplayValueExt(totalYield.gold) + " gold";
+			msg += $I.sep() + $I.fmt("msg.hunt.gold", {amount: this.game.getDisplayValueExt(totalYield.gold)}, "+{amount} gold");
 		}
 		this.game.msg( msg, null, "hunt" );
 	},
@@ -729,8 +738,10 @@ dojo.declare("classes.managers.VillageManager", com.nuclearunicorn.core.TabManag
 			if (promotedKittensCount == 0) {
 				this.game.msg("Your kittens have their best rank");
 			} else {
-				var orthograph = promotedKittensCount == 1 ? "" : "s";
-				this.game.msg("Your leader has promoted " + promotedKittensCount + " kitten" + orthograph);
+				this.game.msg($I.fmt("msg.vill.promoted", {
+					count: promotedKittensCount,
+					unit: promotedKittensCount == 1 ? "kitten" : "kittens"
+				}, "Your leader has promoted {count} {unit}"));
 			}
 		}
 
@@ -1358,7 +1369,7 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
 
 		var jobSelect = dojo.create("select", { style: {float: "right" }}, navbar);
 
-		dojo.create("option", { value: "", innerHTML: "All jobs"}, jobSelect);
+		dojo.create("option", { value: "", innerHTML: $I.ui("All jobs")}, jobSelect);
 		for (var i = 0; i < this.game.village.jobs.length; i++){
 			var job = this.game.village.jobs[i];
 			if (job.unlocked){
@@ -1427,7 +1438,7 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
 			}
 
 			var unassignHref = dojo.create("a", {
-				href: "#", innerHTML: "Unassign&nbsp;Job",
+				href: "#", innerHTML: $I.ui("Unassign&nbsp;Job"),
 				style: {
 					display: kitten.job ? "block" : "none"
 				}
@@ -1435,7 +1446,7 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
 
 			if (this.game.challenges.currentChallenge != "anarchy") {
 				var senatorHref = dojo.create("a", {
-					href: "#", innerHTML: "Make Senator",
+					href: "#", innerHTML: $I.ui("Make Senator"),
 					style: {
 						display: kitten.isLeader || kitten.isSenator ? "none" : "block"
 					}
@@ -1444,7 +1455,7 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
 
 			/*var expToPromote = this.game.village.getRankExp(kitten.rank+1);
 			var promoteHref = dojo.create("a", {
-				href: "#", innerHTML: "Promote (" + this.game.getDisplayValueExt(expToPromote.toFixed()) + " exp)",
+				href: "#", innerHTML: $I.fmt("msg.vill.promoteExp", {exp: this.game.getDisplayValueExt(expToPromote.toFixed())}, "Promote ({exp} exp)"),
 				style: {
 					display: kitten.exp < expToPromote ? "none" : "block"
 				}
@@ -1571,7 +1582,10 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
 			var expToPromote = this.game.village.getRankExp(leader.rank);
 			var goldToPromote = 25 * (leader.rank + 1);
 			this.promoteLeaderHref = dojo.create("a", {
-				href: "#", innerHTML: "Promote (" + this.game.getDisplayValueExt(expToPromote.toFixed()) + " exp, " + goldToPromote + " gold)",
+				href: "#", innerHTML: $I.fmt("msg.vill.promoteExpGold", {
+					exp: this.game.getDisplayValueExt(expToPromote.toFixed()),
+					gold: goldToPromote
+				}, "Promote ({exp} exp, {gold} gold)"),
 				style: {
 					display:
 						(leader.exp < expToPromote || gold.value < goldToPromote) ? "none" : "block"
@@ -1589,7 +1603,7 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
 			var div = dojo.create("div", null, this.governmentDiv);
 
 			this.unassignLeaderJobHref = dojo.create("a", {
-				href: "#", innerHTML: "Unassign Leader Job",
+				href: "#", innerHTML: $I.ui("Unassign Leader Job"),
 				style: {
 					display:
 						(leader.job) ? "inline-block" : "none"
@@ -1623,7 +1637,7 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
 		for (var i = this.game.village.senators.length - 1; i >= 0; i--) {
 			var senator = this.game.village.senators[i];
 
-			var title = senator.trait.title == "None" ? "No trait" : senator.trait.title + " rank " + senator.rank;
+			var title = senator.trait.name == "none" ? "No trait" : senator.trait.title + " rank " + senator.rank;
 			var span = dojo.create("span", {
 				innerHTML : senator.name + " " + senator.surname + " (" + title +")",
 				style: {
@@ -1653,28 +1667,37 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
 	update: function(){
 
 		//update leader stats
-		var leaderInfo = "N/A";
+		var leaderInfo = $I.ui("N/A");
 		var leader = this.game.village.leader;
 		if (leader){
-			var title = leader.trait.title == "None" ? "No trait :< " : leader.trait.title + " (" + this.game.village.getLeaderDescription(leader.trait.name) + ") [rank " + leader.rank + "]";
+			var title = leader.trait.name == "none"
+				? $I.ui("No trait :< ")
+				: $I.fmt("msg.vill.leaderTrait", {
+					trait: leader.trait.title,
+					description: this.game.village.getLeaderDescription(leader.trait.name),
+					rank: leader.rank
+				}, "{trait} ({description}) [rank {rank}]");
 			var nextRank = Math.floor(this.game.village.getRankExp(leader.rank));
 
 			leaderInfo = leader.name + " " + leader.surname + ", " + title +
-				"<br> exp: " + this.game.getDisplayValueExt(leader.exp);
+				$I.ui("<br> exp: ") + this.game.getDisplayValueExt(leader.exp);
 
 			if( nextRank > leader.exp) {
 				leaderInfo += " (" + Math.floor(leader.exp / nextRank * 100 ) + "%)";
 			}
 
 			if (leader.rank > 0){
-				leaderInfo += "<br><br>Job bonus: x" + this.game.village.getLeaderBonus(leader.rank).toFixed(1) + " (" + leader.job + ")";
+				leaderInfo += $I.fmt("msg.vill.leaderBonus", {
+					bonus: this.game.village.getLeaderBonus(leader.rank).toFixed(1),
+					job: leader.job
+				}, "<br><br>Job bonus: x{bonus} ({job})");
 			}
 
 			this.unassignLeaderJobHref.style.display = leader.job ? "block" : "none";
 		}
 		//TODO: promote leader link
 		if (this.game.challenges.currentChallenge != "anarchy") {
-			this.leaderDiv.innerHTML = "<strong>Leader:</strong> " + leaderInfo;
+			this.leaderDiv.innerHTML = "<strong>" + $I.ui("Leader:") + "</strong> " + leaderInfo;
 		}
 
 		//TODO: update senators
@@ -1705,11 +1728,12 @@ dojo.declare("com.nuclearunicorn.game.ui.village.Census", null, {
              var trait = (kitten.trait != "none") ? " - " + traitTitle : "";
              var rank = kitten.rank ? " rank " + kitten.rank : "";*/
 
-            record.content.innerHTML =
-            	":3 " + kitten.name + " " + kitten.surname + ", " + kitten.age + " years old, "
-            	+ kitten.trait["title"]
-            	+ (kitten.rank == 0 ? "" : " (rank " + kitten.rank + ")")
-            	+ "<br>"
+            record.content.innerHTML = $I.fmt("msg.vill.kittenInfo", {
+            	name: kitten.name + " " + kitten.surname,
+            	age: kitten.age,
+            	trait: kitten.trait["title"],
+            	rank: kitten.rank == 0 ? "" : $I.fmt("msg.vill.kittenRank", {rank: kitten.rank}, " (rank {rank})")
+            }, ":3 {name}, {age} years old, {trait}{rank}") + "<br>"
                  /*+ ", exp: " + this.game.getDisplayValueExt(kitten.exp) */;
 
             //--------------- skills ----------------
@@ -1905,7 +1929,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Village", com.nuclearunicorn.game.u
 		var btn = new com.nuclearunicorn.game.ui.ButtonModern({ name:"Clear",
 			description: "Clear all jobs",
 			handler: dojo.hitch(this, function(){
-				if (this.game.opts.noConfirm || confirm("Are you sure?")){
+				if (this.game.opts.noConfirm || confirm($I.ui("Are you sure?"))){
 					this.game.village.clearJobs(true);
 				}
 			})
@@ -1946,8 +1970,8 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Village", com.nuclearunicorn.game.u
 		var statsTd = dojo.create("td", { style: "cursor: pointer; width: 50%; text-align: center;"}, tr);
 
 		UIUtils.attachTooltip(this.game, statsTd, 0, 200, dojo.hitch(this, function(){
-				return "Happiness affects your workers' production and consumption of catnip." +
-						"<br />Rare resources will increase this value whilst over-population will reduce it";
+				return $I.ui("Happiness affects your workers' production and consumption of catnip.") +
+						$I.ui("<br />Rare resources will increase this value whilst over-population will reduce it");
 			}));
 
 		this.happinessStats = statsTd;
@@ -2037,17 +2061,17 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Village", com.nuclearunicorn.game.u
 		this.inherited(arguments);
 
 		if (this.tdTop){
-			this.tdTop.innerHTML = "Free kittens: " + this.game.village.getFreeKittens() + " / " + this.game.resPool.get("kittens").value;
+			this.tdTop.innerHTML = $I.ui("Free kittens: ") + this.game.village.getFreeKittens() + " / " + this.game.resPool.get("kittens").value;
 		}
 
 		if (this.happinessStats){
 			var happiness = this.game.village.happiness * 100;
-			this.happinessStats.innerHTML = "Happiness: " + Math.floor(happiness) + "%";
+			this.happinessStats.innerHTML = $I.ui("Happiness: ") + Math.floor(happiness) + "%";
 		}
 
 		var festivalDays = this.game.calendar.festivalDays;
 		if (festivalDays){
-			this.happinessStats.innerHTML += "<br\><br\> Festival duration "+ this.game.toDisplayDays(festivalDays);
+			this.happinessStats.innerHTML += $I.ui("<br\><br\> Festival duration ") + this.game.toDisplayDays(festivalDays);
 		}
 
 		if (this.statisticsPanel){
@@ -2100,66 +2124,66 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Village", com.nuclearunicorn.game.u
 		switch (true) {
 			//you gotta be kitten me
 		case kittens > 5000:
-			return "Elders";
+			return $I.ui("Elders");
 		case kittens > 2000:
-			return "Galactic Union";
+			return $I.ui("Galactic Union");
 		case kittens > 1500:
-			return "Planetary Council";
+			return $I.ui("Planetary Council");
 		case kittens > 1200:
-			return "Consortium";
+			return $I.ui("Consortium");
         case kittens > 1000:
-            return "Civilisation";	//all rights reserved, yada yada.
+            return $I.ui("Civilisation");	//all rights reserved, yada yada.
         case kittens > 900:
-            return "Society";
+            return $I.ui("Society");
         case kittens > 800:
-            return "Reich";
+            return $I.ui("Reich");
         case kittens > 700:
-            return "Federation";
+            return $I.ui("Federation");
         case kittens > 600:
-            return "Hegemony";
+            return $I.ui("Hegemony");
 		case kittens > 500:
-			return "Dominion";
+			return $I.ui("Dominion");
 		case kittens > 400:
-			return "Imperium";
+			return $I.ui("Imperium");
 		case kittens > 300:
-			return "Empire";
+			return $I.ui("Empire");
 		case kittens > 250:
-			return "Megapolis";
+			return $I.ui("Megapolis");
 		case kittens > 200:
-			return "Metropolis";
+			return $I.ui("Metropolis");
 		case kittens > 150:
-			return "City";
+			return $I.ui("City");
 		case kittens > 100:
-			return "Town";
+			return $I.ui("Town");
 		case kittens > 50:
-			return "Small Town";
+			return $I.ui("Small Town");
 		case kittens > 30:
-			return "Settlement";
+			return $I.ui("Settlement");
 		case kittens > 15:
-			return "Village";
+			return $I.ui("Village");
 		case kittens > 0:
-			return "Small Village";
+			return $I.ui("Small Village");
 		default:
-			return "Outpost";
+			return $I.ui("Outpost");
 		}
 	},
 
 	skillToText: function(value){
 		switch (true) {
 		case value < 100:
-			return "dabbling";
+			return $I.ui("dabbling");
 		case value < 500:
-			return "novice";
+			return $I.ui("novice");
 		case value < 1200:
-			return "adequate";
+			return $I.ui("adequate");
 		case value < 2500:
-			return "competent";
+			return $I.ui("competent");
 		case value < 5000:
-			return "skilled";
+			return $I.ui("skilled");
 		case value < 9000:
-			return "proficient";
+			return $I.ui("proficient");
 		default:
-			return "master";
+			return $I.ui("master");
 		}
 	},
 

@@ -2086,7 +2086,10 @@ dojo.declare("classes.managers.WorkshopManager", com.nuclearunicorn.core.TabMana
     undo: function(metaId, val){
 		var res = this.game.resPool.get(metaId);
 		var craftRatio = this.game.getResCraftRatio(res);
-		this.game.msg( this.game.getDisplayValueExt(val * (1+craftRatio)) + " " + (res.title || res.name) + " refunded");
+		this.game.msg($I.fmt("msg.craft.refunded", {
+			amount: this.game.getDisplayValueExt(val * (1+craftRatio)),
+			resource: res.title || res.name
+		}, "{amount} {resource} refunded"));
         this.craft(metaId, -val, true /*do not create cyclic undo*/);
     },
 
@@ -2114,7 +2117,10 @@ dojo.declare("classes.managers.WorkshopManager", com.nuclearunicorn.core.TabMana
 			var bonus = minAmt * craftRatio;
 
 			var res = this.game.resPool.get(craftName);
-			this.game.msg( "+" + this.game.getDisplayValueExt(minAmt + bonus) + " " + (res.title || craftName) + " crafted", null, "craft");
+			this.game.msg($I.fmt("msg.craft.crafted", {
+				amount: this.game.getDisplayValueExt(minAmt + bonus),
+				resource: res.title || craftName
+			}, "+{amount} {resource} crafted"), null, "craft");
 			this.craft(craftName, minAmt);
 		}
 	},
@@ -2273,21 +2279,21 @@ dojo.declare("com.nuclearunicorn.game.ui.CraftButton", com.nuclearunicorn.game.u
 		var desc = craft.description;
 
 		if (this.game.science.get("mechanization").researched){
-			desc += "<br><br>Engineer's optimal rank: " + craft.tier;
+			desc += $I.ui("<br><br>Engineer's optimal rank: ") + craft.tier;
 
 			var tierBonus = this.game.getEffect("t" + craft.tier + "CraftRatio") || 1;
 			if (tierBonus != 1) {
-				desc += "<br>Engineers expertise: " + this.game.getDisplayValueExt(((tierBonus-1)* 100).toFixed(), true) + "%";
+				desc += $I.ui("<br>Engineers expertise: ") + this.game.getDisplayValueExt(((tierBonus-1)* 100).toFixed(), true) + "%";
 			}
 
 			if (craft.progressHandicap != 1) {
 				var difficulty = this.game.getDisplayValueExt(((-(1 - (1 / craft.progressHandicap)))* 100).toFixed(2), true);
-				desc += "<br>Craft difficulty: " + difficulty + "%";
+				desc += $I.ui("<br>Craft difficulty: ") + difficulty + "%";
 			}
 
 			if (craft.value != 0) {
 				var countdown = (1 / (this.game.workshop.getEffectEngineer(craft.name, false) * 5)).toFixed(0);
-				desc += "<br>=> One craft every: " + countdown + "sec";
+				desc += $I.ui("<br>=> One craft every: ") + countdown + $I.ui("sec");
 			}
 		}
 		return desc;
@@ -2410,7 +2416,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Workshop", com.nuclearunicorn.game.
 		this.buttons = [];
 
 		var div = dojo.create("div", { style: { float: "left"}}, tabContainer);
-		dojo.create("span", { innerHTML: "Craft effectiveness: +" + (this.game.getCraftRatio() * 100).toFixed(0) + "%" }, div);
+		dojo.create("span", { innerHTML: $I.ui("Craft effectiveness: +") + (this.game.getCraftRatio() * 100).toFixed(0) + "%" }, div);
 
 		//--------------------------------------------------------------------
 		var divCombobox = dojo.create("div", {style: { height: "20px"}} , tabContainer);
@@ -2429,7 +2435,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Workshop", com.nuclearunicorn.game.
 			this.render(tabContainer);
 		});
 
-		dojo.create("label", { innerHTML: "Hide researched upgrades", for: "toggleResearched"}, div);
+		dojo.create("label", { innerHTML: $I.ui("Hide researched upgrades"), for: "toggleResearched"}, div);
 		//---------------------------------------------------------------------
 
 		var upgradePanel = new com.nuclearunicorn.game.ui.Panel("Upgrades", this.game.workshop);
@@ -2501,7 +2507,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Workshop", com.nuclearunicorn.game.
 
 		dojo.empty(container);
 
-		dojo.create("span", { innerHTML: "Stuff:" },container);
+		dojo.create("span", { innerHTML: $I.ui("Stuff:") },container);
 
 		var table = dojo.create("table", { style: {
 			paddingTop: "20px"
@@ -2538,7 +2544,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Workshop", com.nuclearunicorn.game.
 		}
 
 		if (this.tdTop && this.game.science.get("mechanization").researched) {
-			this.tdTop.innerHTML = "Free engineers: " + this.game.village.getFreeEngineer() + " / " + this.game.village.getWorkerKittens("engineer");
+			this.tdTop.innerHTML = $I.ui("Free engineers: ") + this.game.village.getFreeEngineer() + " / " + this.game.village.getWorkerKittens("engineer");
 		} else {
 			this.tdTop.innerHTML = "";
 		}

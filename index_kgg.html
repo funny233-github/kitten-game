@@ -62,6 +62,8 @@
 
 				var modules = [
 				    "core",
+					"js/i18n",
+					"js/i18n.zh",
 					"js/resources",
 					"js/calendar",
 					"js/buildings",
@@ -88,6 +90,7 @@
 				def.then(function() {
 					try {
 						gamePage = game = new com.nuclearunicorn.game.ui.GamePage();
+						$I.init(gamePage);
 						gamePage.setUI(new classes.ui.DesktopUI("gameContainerId"));
 
 						gamePage.load();

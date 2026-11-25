@@ -330,6 +330,10 @@ dojo.declare("com.nuclearunicorn.game.log.Console", null, {
 		 * Prints message in the console. Returns a DOM node for the last created message
 		 */
 		msg : function(message, type, tag, noBullet){
+			if (window.$I){
+				message = $I.message(message);
+			}
+
 			if (tag && this.filters[tag]){
 				var filter = this.filters[tag];
 
@@ -496,6 +500,12 @@ dojo.declare("com.nuclearunicorn.game.ui.Button", com.nuclearunicorn.core.Contro
 
 		this.prices = opts.prices ? opts.prices : [];
 		this.priceRatio = opts.priceRatio;
+
+		//not every button is backed by translatable metadata, some just pass plain english text
+		if (window.$I){
+			this.name = $I.ui(this.name);
+			this.description = $I.ui(this.description);
+		}
 
 		//screw this
 		this.opts = opts;
@@ -768,6 +778,10 @@ dojo.declare("com.nuclearunicorn.game.ui.Button", com.nuclearunicorn.core.Contro
 
 	//Fast access snippet to create button links like "on", "off", "sell", etc.
 	addLink: function(title, handler, addBreak){
+
+		if (window.$I){
+			title = $I.ui(title);
+		}
 
 		var linkBreak = null;
 		var link = dojo.create("a", {
@@ -1096,7 +1110,7 @@ dojo.declare("com.nuclearunicorn.game.ui.ButtonModern", com.nuclearunicorn.game.
 
 		if (!hideTitle){
 			dojo.create("div", {
-				innerHTML: "Effects:",
+				innerHTML: $I.ui("Effects:"),
 				style: {
 					textAlign: "center",
 					width: "100%",
@@ -1283,7 +1297,7 @@ dojo.declare("com.nuclearunicorn.game.ui.BuildingBtn", com.nuclearunicorn.game.u
 					function(event){
 						var end = bldMeta.val - 1;
 						if (end > 0 && event.shiftKey) { //no need to confirm if selling just 1
-							if (this.game.opts.noConfirm || confirm("Are you sure you want to sell all?")) {
+							if (this.game.opts.noConfirm || confirm($I.ui("Are you sure you want to sell all?"))) {
 								end = 0;
 							}
 						}
@@ -1429,13 +1443,13 @@ dojo.declare("com.nuclearunicorn.game.ui.BuildingBtn", com.nuclearunicorn.game.u
 			*/
 
 			if (this.toggle){
-				this.toggle.link.textContent = building.on ? "on" : "off";
-				this.toggle.link.title = building.on ? "Building enabled" : "Building disabled";
+				this.toggle.link.textContent = building.on ? $I.ui("on") : $I.ui("off");
+				this.toggle.link.title = building.on ? $I.ui("Building enabled") : $I.ui("Building disabled");
 			}
 
 			if (this.toggleAutomation){
 				this.toggleAutomation.link.textContent = building.isAutomationEnabled ? "A" : "*";
-				this.toggleAutomation.link.title = building.isAutomationEnabled ? "Automation enabled" : "Automation disabled";
+				this.toggleAutomation.link.title = building.isAutomationEnabled ? $I.ui("Automation enabled") : $I.ui("Automation disabled");
 			}
 
 		}
@@ -1457,7 +1471,7 @@ dojo.declare("com.nuclearunicorn.game.ui.BuildingStackableBtn", com.nuclearunico
 		if (meta.val == 0) {
 			return meta.label;
 		} else if (meta.noStackable){
-			return meta.label + " (complete)";
+			return meta.label + " " + $I.ui("(complete)");
 		} else if (meta.togglableOnOff){
 			return meta.label + " (" + meta.val + ")";
 		} else if (meta.togglable) {
@@ -1484,12 +1498,12 @@ dojo.declare("com.nuclearunicorn.game.ui.BuildingStackableBtn", com.nuclearunico
 		if (this.enabled && this.hasResources() || this.game.devMode){
 			if (
 				this.game.ironWill && meta.effects && meta.effects["maxKittens"] > 0 && this.game.science.get("archery").researched &&
-				!confirm("This will end iron will. Are you sure?")
+				!confirm($I.ui("This will end iron will. Are you sure?"))
 			){
 				return;
 			}
 			if (!meta.noStackable && event.shiftKey){
-                if (this.game.opts.noConfirm || confirm("Are you sure you want to construct all buildings?")){
+                if (this.game.opts.noConfirm || confirm($I.ui("Are you sure you want to construct all buildings?"))){
 					var maxBld = typeof(meta.limitBuild) == "number" ? (meta.limitBuild - meta.val) : 10000;
                     this.build(meta, maxBld);
                 }
@@ -1560,7 +1574,7 @@ dojo.declare("com.nuclearunicorn.game.ui.BuildingResearchBtn", com.nuclearunicor
 	getDescription: function(){
 		var meta = this.getMetadata();
 		if (meta.effectDesc && meta.researched){
-			return this.inherited(arguments) + "<br>" + "Effect: " + meta.effectDesc;
+			return this.inherited(arguments) + "<br>" + $I.ui("Effect: ") + meta.effectDesc;
 		} else {
 			return this.inherited(arguments);
 		}
@@ -1569,7 +1583,7 @@ dojo.declare("com.nuclearunicorn.game.ui.BuildingResearchBtn", com.nuclearunicor
 	getName: function(){
 		var meta = this.getMetadata();
 		if (meta.researched){
-			return meta.label + " (Complete)";
+			return meta.label + " " + (window.$I ? $I.ui("(Complete)") : "(Complete)");
 		} else {
 			return meta.label;
 		}
@@ -1714,7 +1728,11 @@ dojo.declare("com.nuclearunicorn.game.ui.Panel", [com.nuclearunicorn.game.ui.Con
 	constructor: function(name, tabManager){
 		this.name = name;
 		if (tabManager){
+			//the name doubles as an id of the persisted collapse state, so it is registered untranslated
 			tabManager.registerPanel(name, this);
+		}
+		if (window.$I){
+			this.name = $I.ui(this.name);
 		}
 	},
 

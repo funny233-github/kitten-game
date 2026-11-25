@@ -231,6 +231,12 @@ dojo.declare("com.nuclearunicorn.game.EffectsManager", null, {
 
 	effectMeta: function(effectName) {
 		var game = this.game;
+
+		//i18n is optional: other entry points (index_kgg.html, index-mobile.html) may not load it
+		var i18n = window.$I;
+		var word = function(w){
+			return i18n ? i18n.suffix(w) : w;
+		};
 		for (var i = 0; i < game.resPool.resourceData.length; i++) {
 			if (effectName.indexOf(game.resPool.resourceData[i].name) == 0) {
 				var resname = game.resPool.resourceData[i].name;
@@ -260,30 +266,30 @@ dojo.declare("com.nuclearunicorn.game.EffectsManager", null, {
 				};
 			case type == "Max":
 				return {
-					title: "Max " + restitle,
+					title: (i18n ? i18n.text("effect.maxFormat", "Max {res}") : "Max {res}").replace("{res}", restitle),
 					resname: resname
 				};
 			case type == "Ratio":
 				return {
-					title: restitle + " bonus",
+					title: restitle + " " + word("bonus"),
 					resname: resname,
 					type: "ratio"
 				};
 			case type == "DemandRatio":
 				return {
-					title: restitle + " demand reduction",
+					title: restitle + " " + word("demandReduction"),
 					resname: resname,
 					type: "ratio"
 				};
 			case (type == "PerTickBase" || type == "PerTickBaseSpace"):
 				return {
-					title: restitle + " production",
+					title: restitle + " " + word("production"),
 					resname: resname,
 					type: "perTick"
 				};
 			case (type == "PerTickCon" || type == "PerTickAutoprod" || type == "PerTickProd" || type == "PerTickSpace" || type == "PerTickAutoprodSpace"):
 				return {
-					title: restitle + " conversion",
+					title: restitle + " " + word("conversion"),
 					resname: resname,
 					type: "perTick"
 				};
@@ -1150,7 +1156,10 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 
 		var messageLine = this.console.static.msg(message, type, tag, noBullet);
 		if (messageLine && hasCalendarTech){
-			this.console.static.msg("Year " + this.calendar.year.toLocaleString() + " - " + this.calendar.getCurSeasonTitle(), "date", null, false);
+			this.console.static.msg($I.fmt("msg.game.yearLine", {
+				year: this.calendar.year.toLocaleString(),
+				season: this.calendar.getCurSeasonTitle()
+			}, "Year {year} - {season}"), "date", null, false);
 		}
 
 		return messageLine;
@@ -1281,10 +1290,20 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 		this.updateOptionsUI();
 	},
 
+	/**
+	 * Switches the interface language. Translations are applied to the game metadata in
+	 * place, so the only way to get a consistent UI is to save and reload the page.
+	 */
+	setLanguage: function(lang){
+		if (window.$I){
+			$I.setLanguage(lang, this);
+		}
+	},
+
 	togglePause: function(){
 		var pauseBtn = dojo.byId("pauseBtn");
 		this.isPaused = !this.isPaused;
-		pauseBtn.innerHTML = this.isPaused ? "unpawse" : "pawse";
+		pauseBtn.innerHTML = this.isPaused ? $I.ui("unpawse") : $I.ui("pawse");
 
 		if (this.isPaused){
 			this.pauseTimestamp = Date.now();
@@ -1400,12 +1419,12 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 			$("#exportData").val(LZString.compressToBase64(data));
 			$("#exportData").select();
 		} else {
-			window.prompt("Copy to clipboard: Ctrl+C, Enter", btoa(data));
+			window.prompt($I.ui("Copy to clipboard: Ctrl+C, Enter"), btoa(data));
 		}
 	},
 
 	saveImport: function(){
-		if (!window.confirm("Are your sure? This will overwrite your save!")){
+		if (!window.confirm($I.ui("Are your sure? This will overwrite your save!"))){
 			return;
 		}
 		var data = $("#importData").val();
@@ -1464,7 +1483,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 	},
 
 	saveImportDropbox: function(){
-		if (!window.confirm("Are your sure? This will overwrite your save!")){
+		if (!window.confirm($I.ui("Are your sure? This will overwrite your save!"))){
 			return;
 		}
 
@@ -2505,7 +2524,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 
 		// some way to protect people from refining all catnip during the winter
 		if (resName == "wood" && this.getResourcePerTick("catnip", true) <= 0){
-			if (!confirm("Are you sure? Your kittens will DIE")){
+			if (!confirm($I.ui("Are you sure? Your kittens will DIE"))){
 				return;
 			}
 		}
@@ -2575,17 +2594,17 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 		var resPertick = this.getResourcePerTick(res.name, true);
 
 		if (this.opts.usePercentageResourceValues){
-			resString += "<br> Net gain: " + this.getDisplayValueExt(resPertick, true, true);
+			resString += $I.ui("<br> Net gain: ") + this.getDisplayValueExt(resPertick, true, true);
 		}
 
 		if (resPertick < 0) {
 			var toZero = res.value / (-resPertick * this.getRateUI());
-			resString += "<br>To zero: " + this.toDisplaySeconds(toZero.toFixed());
+			resString += $I.ui("<br>To zero: ") + this.toDisplaySeconds(toZero.toFixed());
 		} else {
 			if (res.maxValue && res.value < res.maxValue) {
 				var toCap = (res.maxValue - res.value) / (resPertick * this.getRateUI());
 				if (toCap){
-					resString += "<br>To cap: " + this.toDisplaySeconds(toCap.toFixed());
+					resString += $I.ui("<br>To cap: ") + this.toDisplaySeconds(toCap.toFixed());
 				}
 			}
 		}
@@ -2627,7 +2646,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 	},
 
 	getStackElemString: function(stackElem, res){
-		var resString = stackElem.name + ":&nbsp;<div style=\"float: right;\">";
+		var resString = $I.ui(stackElem.name) + ":&nbsp;<div style=\"float: right;\">";
 
 		if (stackElem.type == "fixed"){
 			resString += this.getDisplayValueExt(stackElem.value, true, true);
@@ -2880,7 +2899,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 
 			if (tsDiff < 10) {tsDiff = 10;}
             if ($("#devPanelFPS")[0]) {
-                $("#devPanelFPS")[0].innerHTML = "update time: " + tsDiff + " ms,"
+                $("#devPanelFPS")[0].innerHTML = $I.ui("update time: ") + tsDiff + " ms,"
                 + " avg: " + avg.toFixed() + " ms [ " + avg0.toFixed() + " | " + avg1.toFixed() + " | " + avg2.toFixed() + " | " + avg3.toFixed() + " | " + avg4.toFixed() + "] (click to restart)";
                 dojo.connect($("#devPanelFPS")[0], "onclick", this, dojo.partial(function() {
 					this.totalUpdateTime[0] = 0;
@@ -2909,7 +2928,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 			"\n\nYou will receive NO BONUS points. You will save old bonus points and achievements.";
 		}
 
-		if (!confirm(msg)){
+		if (!confirm($I.ui(msg))){
 			return;
 		}
 
@@ -2930,18 +2949,18 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 
 	discardParagon: function(){
 		var msg = "Are you sure that you want to discard all your paragon points? This action can not be undone.";
-		if (!confirm(msg)){
+		if (!confirm($I.ui(msg))){
 			return;
 		}
 		if (this.resPool.get("paragon").value > 100){
 			msg = "You have a lot of paragon points. Are you absolutely sure?";
-			if (!confirm(msg)){
+			if (!confirm($I.ui(msg))){
 				return;
 			}
 		}
 		if (this.ironWill){
 			msg = "Warning! Burning paragon will break your Iron Will mode. Do you want to proceed?";
-			if (!confirm(msg)){
+			if (!confirm($I.ui(msg))){
 				return;
 			}
 		}
@@ -3418,7 +3437,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 					var amt = 5000;
 				}
 				var karmaGained = this.getTriValue(this.karmaKittens + amt, 5) - this.getTriValue(this.karmaKittens, 5);
-				var msg = "Got " + this.getDisplayValueExt(karmaGained) + " Karma!";
+				var msg = $I.fmt("msg.game.gotKarma", {amount: this.getDisplayValueExt(karmaGained)}, "Got {amount} Karma!");
 				this.karmaKittens += amt;
 				break;
 			case "Paragon":
@@ -3427,7 +3446,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 				} else {
 					var amt = 100;
 				}
-				var msg = "Got " + this.getDisplayValueExt(amt) + " Paragon!";
+				var msg = $I.fmt("msg.game.gotParagon", {amount: this.getDisplayValueExt(amt)}, "Got {amount} Paragon!");
 				this.resPool.addResEvent("paragon", amt);
 				break;
 			case "TimeCrystal":
@@ -3436,12 +3455,12 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 				} else {
 					var amt = 50;
 				}
-				var msg = "Got " + this.getDisplayValueExt(amt) + " Time Crystals!";
+				var msg = $I.fmt("msg.game.gotTimeCrystals", {amount: this.getDisplayValueExt(amt)}, "Got {amount} Time Crystals!");
 				this.resPool.addResEvent("timeCrystal", amt);
 				break;
 			case "BLS" :
 				amt = this.resPool.get("sorrow").maxValue - this.resPool.get("sorrow").value;
-				var msg = "Got " + this.getDisplayValueExt(amt) + " Black Liquid Sorrow!";
+				var msg = $I.fmt("msg.game.gotSorrow", {amount: this.getDisplayValueExt(amt)}, "Got {amount} Black Liquid Sorrow!");
 				this.resPool.addResEvent("sorrow", amt);
 				break;
 			case "Apocrypha":
@@ -3454,12 +3473,12 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 				this.religion.faithRatio += amt;
 				var post = this.religion.getFaithBonus();
 				var apocryphaGained = (post-pre)*100;
-				var msg = "Apocrypha Bonus increased by " + this.getDisplayValueExt(apocryphaGained) + "%!";
+				var msg = $I.fmt("msg.game.apocrypha", {amount: this.getDisplayValueExt(apocryphaGained)}, "Apocrypha Bonus increased by {amount}%!");
 				break;
 			case "Transcendence":
 				var amt = this.religion.getTranscendenceRatio(this.religion.getTranscendenceLevel() + 4) - this.religion.getTranscendenceRatio(this.religion.getTranscendenceLevel());
 				this.religion.tcratio += amt;
-				var msg = "Transcendence Level increased by 4!";
+				var msg = $I.ui("Transcendence Level increased by 4!");
 				break;
 			case "Metaphysics":
 				if(!this.prestige.getPerk("goldenRatio").researched) {
@@ -3481,7 +3500,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 					this.prestige.getPerk("renaissance").researched = true;
 					var perk = "Renaissance";
 				}
-				var msg = "Unlocked " + perk + "!";
+				var msg = $I.fmt("msg.game.perkUnlocked", {perk: perk}, "Unlocked {perk}!");
 				break;
 			case "Compendiums":
 				if(this.resPool.get("compedium").value>500000) {
@@ -3489,7 +3508,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GamePage", null, {
 				} else {
 					var amt = 100000;
 				}
-				var msg = "Got " + this.getDisplayValueExt(amt) + " Compendiums!";
+				var msg = $I.fmt("msg.game.gotCompendiums", {amount: this.getDisplayValueExt(amt)}, "Got {amount} Compendiums!");
 				this.resPool.addResEvent("compedium", amt);
 			break;
 		}

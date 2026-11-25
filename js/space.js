@@ -935,9 +935,9 @@ dojo.declare("com.nuclearunicorn.game.ui.SpaceProgramBtn", com.nuclearunicorn.ga
 		if (meta.val == 0) {
 			return meta.label;
 		} else if (meta.on == 0){
-			return meta.label + " (in progress)";
+			return meta.label + " " + (window.$I ? $I.ui("(in progress)") : "(in progress)");
 		} else {
-			return meta.label + " (complete)";
+			return meta.label + " " + (window.$I ? $I.ui("(complete)") : "(complete)");
 		}
 	},
 
@@ -1021,7 +1021,7 @@ dojo.declare("classes.ui.space.PlanetPanel", com.nuclearunicorn.game.ui.Panel, {
 	update: function() {
 		if (!this.planet.reached && this.planet.unlocked && this.planet.routeDays > 0) {
 			var routeSpeed = this.game.getEffect("routeSpeed") != 0 ? this.game.getEffect("routeSpeed") : 1;
-			this.title.innerHTML = this.name + " | ETA: " + this.game.toDisplayDays(Math.round(this.planet.routeDays / routeSpeed));
+			this.title.innerHTML = this.name + $I.ui(" | ETA: ") + this.game.toDisplayDays(Math.round(this.planet.routeDays / routeSpeed));
 		} else {
 			this.title.innerHTML = this.name;
 		}
@@ -1058,7 +1058,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.SpaceTab", com.nuclearunicorn.game.
 			this.render(container);
 		});
 
-		dojo.create("label", { innerHTML: "Hide complete missions", for: "toggleResearched"}, div);
+		dojo.create("label", { innerHTML: $I.ui("Hide complete missions"), for: "toggleResearched"}, div);
 		//---------------------------------------------------------------------
 
 		//padding div to preserve markup

@@ -93,7 +93,7 @@ dojo.declare("classes.ui.DesktopUI", classes.ui.UISystem, {
             tab.updateTab();
             var tabLink = dojo.create("a", {
                 href:"#",
-                innerHTML: tab.tabName,
+                innerHTML: window.$I ? $I.tab(tab.tabName) : tab.tabName,
                 className: "tab",
                 style : {
                     whiteSpace: "nowrap"
@@ -186,7 +186,7 @@ dojo.declare("classes.ui.DesktopUI", classes.ui.UISystem, {
             }
             var huntCount = Math.floor(catpower.value / 100);
             $("#fastHuntContainerCount")[0].innerHTML = this.game.getDisplayValueExt(huntCount, false, false, 0)
-                + (huntCount === 1 ? " time" : " times");
+                + $I.ui(huntCount === 1 ? " time" : " times");
             } else {
                 if (this.fastHuntContainer.style.visibility == "visible"){
                 this.fastHuntContainer.style.visibility = "hidden";
@@ -204,7 +204,7 @@ dojo.declare("classes.ui.DesktopUI", classes.ui.UISystem, {
 
             var mod = "";
             if (calendar.weather){
-                mod = " (" + calendar.weather + ")";
+                mod = " (" + $I.ui(calendar.weather) + ")";
             }
 
             var year = calendar.year;
@@ -212,10 +212,17 @@ dojo.declare("classes.ui.DesktopUI", classes.ui.UISystem, {
                 year = this.game.getDisplayValueExt(year, false, false, 0);
             }
 
-            calendarDiv.innerHTML = "Year " + year + " - " +
-                seasonTitle + mod + ", day " + calendar.integerDay();
-            document.title = "Kittens Game - Year " + calendar.year + ", " +
-                seasonTitle + ", d. " + calendar.integerDay();
+            calendarDiv.innerHTML = $I.fmt("msg.calendar.yearLine", {
+                year: year,
+                season: seasonTitle,
+                weather: mod,
+                day: calendar.integerDay()
+            }, "Year {year} - {season}{weather}, day {day}");
+            document.title = $I.fmt("msg.calendar.title", {
+                year: calendar.year,
+                season: seasonTitle,
+                day: calendar.integerDay()
+            }, "Kittens Game - Year {year}, {season}, d. {day}");
 
             if (this.game.ironWill && calendar.observeBtn) {
                 document.title = "[EVENT!]" + document.title;
@@ -258,7 +265,8 @@ dojo.declare("classes.ui.DesktopUI", classes.ui.UISystem, {
         }});	//calculate estimate winter per tick for catnip;
 
         if (this.game.resPool.get("catnip").value + ( winterDays * catnipPerTick / calendar.dayPerTick ) <= 0 ){
-            advDiv.innerHTML = "<span>Food advisor: 'Your catnip supply is too low!'<span>";
+            advDiv.innerHTML = "<span>" + (window.$I ? $I.text("ui.foodAdvisor",
+                "Food advisor: 'Your catnip supply is too low!'") : "Food advisor: 'Your catnip supply is too low!'") + "<span>";
         }
     },
 
@@ -267,6 +275,7 @@ dojo.declare("classes.ui.DesktopUI", classes.ui.UISystem, {
 
         $("#schemeToggle").val(game.colorScheme);
         $("body").attr("class", "scheme_" + game.colorScheme);
+        if (window.$I){ $("#langToggle").val($I.lang); }
 
         $("#workersToggle")[0].checked = game.useWorkers;
         $("#forceHighPrecision")[0].checked = game.forceHighPrecision;

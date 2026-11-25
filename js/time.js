@@ -72,8 +72,10 @@ dojo.declare("classes.managers.TimeManager", com.nuclearunicorn.core.TabManager,
 
 		var bonusSeconds = Math.floor(temporalFluxAdded / this.game.rate);
         if (bonusSeconds > 0){
-            this.game.msg("You have recharged " + bonusSeconds + " second"
-				+ (bonusSeconds > 1 ? "s" : "") + " of temporal flux");
+            this.game.msg($I.fmt("msg.time.recharged", {
+				amount: bonusSeconds,
+				unit: bonusSeconds > 1 ? "seconds" : "second"
+			}, "You have recharged {amount} {unit} of temporal flux"));
         }
     },
 
@@ -335,9 +337,9 @@ dojo.declare("classes.managers.TimeManager", com.nuclearunicorn.core.TabManager,
         }
 
         if (amt == 1) {
-            game.msg("Time crystal destroyed, skipped one year");
+            game.msg($I.fmt("msg.time.shatterOne", {}, "Time crystal destroyed, skipped one year"));
         } else {
-            game.msg("Time crystal destroyed, skipped " + amt + " years");
+            game.msg($I.fmt("msg.time.shatter", {years: amt}, "Time crystal destroyed, skipped {years} years"));
         }
 
         game.time.heat += amt*10;
@@ -404,7 +406,7 @@ dojo.declare("classes.ui.TimeControlWgt", [mixin.IChildrenAware, mixin.IGameAwar
     },
 
     update: function(){
-        this.timeSpan.innerHTML = "Temporal Flux: " + this.game.resPool.get("temporalFlux").value.toFixed(0) + "/" + this.game.resPool.get("temporalFlux").maxValue;
+        this.timeSpan.innerHTML = $I.ui("Temporal Flux: ") + this.game.resPool.get("temporalFlux").value.toFixed(0) + "/" + this.game.resPool.get("temporalFlux").maxValue;
         var second = this.game.resPool.get("temporalFlux").value / this.game.rate;
         if (second >= 1){
             this.timeSpan.innerHTML +=  " (" + this.game.toDisplaySeconds(second) + ")";
@@ -413,9 +415,9 @@ dojo.declare("classes.ui.TimeControlWgt", [mixin.IChildrenAware, mixin.IGameAwar
         if (this.game.workshop.get("chronoforge").researched) {
             var heatMax = this.game.getEffect("heatMax");
             if(this.game.time.heat > heatMax){
-                this.timeSpan.innerHTML += "<br>Heat: <span style='color:red;'>" + this.game.time.heat.toFixed(2) + "</span>/" + heatMax;
+                this.timeSpan.innerHTML += $I.ui("<br>Heat: <span style='color:red;'>") + this.game.time.heat.toFixed(2) + "</span>/" + heatMax;
             } else {
-                this.timeSpan.innerHTML += "<br>Heat: " + this.game.time.heat.toFixed(2) + "/" + heatMax;
+                this.timeSpan.innerHTML += $I.ui("<br>Heat: ") + this.game.time.heat.toFixed(2) + "/" + heatMax;
             }
         }
 
@@ -439,7 +441,7 @@ dojo.declare("classes.ui.time.ShatterTCBtn", com.nuclearunicorn.game.ui.ButtonMo
         var name = this.inherited(arguments);
 
         if (this.game.time.heat > this.game.getEffect("heatMax")){
-            name += " (Overheat)";
+            name += " " + (window.$I ? $I.ui("(Overheat)") : "(Overheat)");
         }
         return name;
     },
@@ -709,8 +711,8 @@ dojo.declare("classes.ui.ResetWgt", [mixin.IChildrenAware, mixin.IGameAware], {
     update: function(){
         this.inherited(arguments);
 
-        var msg = "Reseting the timeline will start the game from the scratch. You will keep all of your statistic and achievements. You may receive various game bonuses.<br>";
-        msg += "<br>Resetting at this point will give you:<br>";
+        var msg = $I.ui("Reseting the timeline will start the game from the scratch. You will keep all of your statistic and achievements. You may receive various game bonuses.<br>");
+        msg += $I.ui("<br>Resetting at this point will give you:<br>");
 
         var kittens = this.game.resPool.get("kittens").value;
         var stripe = 5;
@@ -723,11 +725,11 @@ dojo.declare("classes.ui.ResetWgt", [mixin.IChildrenAware, mixin.IGameAware], {
 			paragonPoints = (kittens - 70);
 		}
 
-        msg += "Karma points: " + karmaPoints;
-        msg += "<br>Paragon points: " + paragonPoints;
+        msg += $I.ui("Karma points: ") + karmaPoints;
+        msg += $I.ui("<br>Paragon points: ") + paragonPoints;
 
         if (this.game.ironWill){
-            msg += "<br>Zebra hunters: " + this.game._getBonusZebras();
+            msg += $I.ui("<br>Zebra hunters: ") + this.game._getBonusZebras();
         }
 
 

@@ -636,11 +636,12 @@ dojo.declare("classes.managers.ReligionManager", com.nuclearunicorn.core.TabMana
 		if (!religion.getRU("transcendence").on){
 			return;	//:3
 		}
-		if (!confirm("Are you sure you want to discard your praise bonus ?" +
-				"\n\nYou can reach a special transcendence level sacrificing your praise bonus." +
-				"\n\nEvery level requires proportionally more faith bonus to be sacrificed." +
-				"\n\nThis bonus will stack and carry over through resets." +
-				"\n\nCLICKING THIS BUTTON WILL ERASE PART OF YOUR PRAISE'S FAITH BONUS.")){
+		var discardWarning = "Are you sure you want to discard your praise bonus ?" +
+			"\n\nYou can reach a special transcendence level sacrificing your praise bonus." +
+			"\n\nEvery level requires proportionally more faith bonus to be sacrificed." +
+			"\n\nThis bonus will stack and carry over through resets." +
+			"\n\nCLICKING THIS BUTTON WILL ERASE PART OF YOUR PRAISE'S FAITH BONUS.";
+		if (!confirm($I.ui(discardWarning))){
 			return;
 		}
 
@@ -653,7 +654,7 @@ dojo.declare("classes.managers.ReligionManager", com.nuclearunicorn.core.TabMana
 			religion.tcratio += needNextLevel;
 			religion.tclevel += 1;
 
-			this.game.msg("You have transcended the mortal limits. T-level: " + religion.tclevel );
+			this.game.msg($I.fmt("msg.rel.transcend", {level: religion.tclevel}, "You have transcended the mortal limits. T-level: {level}"));
 		} else {
 			var progressPercentage = this.game.toDisplayPercentage(religion.faithRatio / needNextLevel, 2, true);
 			var leftNumber = (religion.faithRatio / needNextLevel) * (religion.tclevel + 1) - 1;
@@ -661,7 +662,7 @@ dojo.declare("classes.managers.ReligionManager", com.nuclearunicorn.core.TabMana
 				leftNumber = 0;
 			}
 			var progressNumber = leftNumber.toFixed(0) + " / " + (religion.tclevel + 1);
-			this.game.msg("One step closer: " + progressNumber + " (" + progressPercentage + "%)");
+			this.game.msg($I.fmt("msg.rel.progress", {progress: progressNumber, percent: progressPercentage}, "One step closer: {progress} ({percent}%)"));
 		}
 	},
 
@@ -846,7 +847,10 @@ dojo.declare("classes.ui.religion.SacrificeBtn", com.nuclearunicorn.game.ui.Butt
 		this.game.resPool.addResEvent("tears", tearCount);
 		this.game.stats.getStat("unicornsSacrificed").val += unicornCount;
 
-		this.game.msg(this.game.getDisplayValueExt(unicornCount) + " unicorns have been sacrificed. You've got " + this.game.getDisplayValueExt(tearCount) + " unicorn tears!");
+		this.game.msg($I.fmt("msg.rel.sacrificeUnicorns", {
+			sacrificed: this.game.getDisplayValueExt(unicornCount),
+			tears: this.game.getDisplayValueExt(tearCount)
+		}, "{sacrificed} unicorns have been sacrificed. You've got {tears} unicorn tears!"));
 	},
 
 	getSelectedObject: function(){
@@ -927,7 +931,11 @@ dojo.declare("classes.ui.religion.SacrificeAlicornsBtn", com.nuclearunicorn.game
 			zigguratUpgrades: ["skyPalace", "unicornUtopia", "sunspire"]
 		});
 
-		this.game.msg(alicornsCount + " alicorns have been banished. You've got " + this.game.getDisplayValueExt(tcAmt) + " time crystal" + (tcAmt == 1 ? "" : "s") + "!");
+		this.game.msg($I.fmt("msg.rel.sacrificeAlicorns", {
+			banished: alicornsCount,
+			crystals: this.game.getDisplayValueExt(tcAmt),
+			unit: tcAmt == 1 ? "time crystal" : "time crystals"
+		}, "{banished} alicorns have been banished. You've got {crystals} {unit}!"));
 	},
 
 	updateVisible: function(){
@@ -984,7 +992,7 @@ dojo.declare("classes.ui.religion.RefineTCBtn", com.nuclearunicorn.game.ui.Butto
 	refine: function(){
 		var relicsCount = (1 + this.game.getEffect("relicRefineRatio") * this.game.religion.getZU("blackPyramid").val);
 		this.game.resPool.addResEvent("relic", relicsCount);
-		this.game.msg(relicsCount + " relics crafted");
+		this.game.msg($I.fmt("msg.rel.relicsRefined", {amount: relicsCount}, "{amount} relics crafted"));
 	},
 
 	updateVisible: function(){
@@ -1220,7 +1228,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.ReligionTab", com.nuclearunicorn.ga
 			}
 
 			if (religion.faith && this.faithCount){
-				this.faithCount.innerHTML = "Total faith: " + this.game.getDisplayValueExt(religion.faith);
+				this.faithCount.innerHTML = $I.ui("Total faith: ") + this.game.getDisplayValueExt(religion.faith);
 			} else {
 				this.faithCount.innerHTML = "";
 			}
@@ -1253,10 +1261,11 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.ReligionTab", com.nuclearunicorn.ga
 			return;	//trust no one
 		}
 
-		if (!confirm("Are you sure you want to reset the pool?" +
-				"\n\nYou will get +10% to faith conversion per 100K of faith." +
-				"\n\nThis bonus will carry over through resets." +
-				"\n\nCLICKING THIS BUTTON WILL ERASE PART OF YOUR FAITH BONUS.")){
+		var resetWarning = "Are you sure you want to reset the pool?" +
+			"\n\nYou will get +10% to faith conversion per 100K of faith." +
+			"\n\nThis bonus will carry over through resets." +
+			"\n\nCLICKING THIS BUTTON WILL ERASE PART OF YOUR FAITH BONUS.";
+		if (!confirm($I.ui(resetWarning))){
 			return;
 		}
 

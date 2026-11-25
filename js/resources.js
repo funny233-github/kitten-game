@@ -934,7 +934,7 @@ dojo.declare("com.nuclearunicorn.game.ui.GenericResourceTable", null, {
 
 			var perTick = this.game.calendar.day < 0 ? 0 : this.game.getResourcePerTick(res.name, true);
 			perTick = this.game.opts.usePerSecondValues ? perTick * this.game.getRateUI() : perTick;
-			var postfix = this.game.opts.usePerSecondValues ? "/sec" : "";
+			var postfix = this.game.opts.usePerSecondValues ? $I.ui("/sec") : "";
 			if (this.game.opts.usePercentageResourceValues && res.maxValue){
 				perTick = (perTick / res.maxValue * 100).toFixed(2);
 				postfix = "%" + postfix;
@@ -1142,7 +1142,7 @@ dojo.declare("com.nuclearunicorn.game.ui.CraftResourceTable", com.nuclearunicorn
 
 			var aAll = dojo.create("a", {
 				href: "#",
-				innerHTML : "all",
+				innerHTML : $I.ui("all"),
 				style: {
 					display: this.hasMinAmt(recipe) ? "" : "none"
 				}

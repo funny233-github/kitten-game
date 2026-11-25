@@ -216,7 +216,7 @@ dojo.declare("com.nuclearunicorn.game.Calendar", null, {
 		var sciGain = this.game.resPool.addResEvent("science", sciBonus);
 
 		if (sciGain > 0 && !isSilent){
-			this.game.msg(this.game.getDisplayValueExt(sciGain, true) + " science!", "", "astronomicalEvent", true);
+			this.game.msg($I.fmt("msg.event.science", {amount: this.game.getDisplayValueExt(sciGain, true)}, "{amount} science!"), "", "astronomicalEvent", true);
 		}
 
 		if (this.game.science.get("astronomy").researched){
@@ -272,7 +272,7 @@ dojo.declare("com.nuclearunicorn.game.Calendar", null, {
 				var tooltip = dojo.create("div", { className: "button_tooltip" }, null);
 
 				var cycleSpan = dojo.create("div", {
-					innerHTML: cycle.title + " (Year " + this.cycleYear+")",
+					innerHTML: $I.fmt("msg.calendar.cycle", {cycle: cycle.title, year: this.cycleYear}, "{cycle} (Year {year})"),
 					style: { textAlign: "center", clear: "both"}
 				}, tooltip );
 
@@ -282,7 +282,7 @@ dojo.declare("com.nuclearunicorn.game.Calendar", null, {
 					dojo.setStyle(cycleSpan, "paddingBottom", "4px");
 
 					var cycleSpan = dojo.create("div", {
-						innerHTML: "Cycle Effects:",
+						innerHTML: $I.ui("Cycle Effects:"),
 						style: { textAlign: "center", paddingTop: "4px"}
 					}, tooltip );
 
@@ -324,7 +324,7 @@ dojo.declare("com.nuclearunicorn.game.Calendar", null, {
 				if (game.prestige.getPerk("numeromancy").researched && this.festivalDays) {
 					// Cycle Festival Effects
 					var cycleSpan = dojo.create("div", {
-						innerHTML: "Cycle Festival Effects:",
+						innerHTML: $I.ui("Cycle Festival Effects:"),
 						style: { textAlign: "center"}
 					}, tooltip );
 
@@ -562,16 +562,24 @@ dojo.declare("com.nuclearunicorn.game.Calendar", null, {
 			}
 
 			if (mineralsGain > 0 || sciGain > 0){
-				var meteorMsg = "A meteor fell near the village";
+				var meteorMsg;
+				var meteorParams = {
+					minerals: this.game.getDisplayValueExt(mineralsGain),
+					science: this.game.getDisplayValueExt(sciGain)
+				};
 
-				if (mineralsGain > 0){
-					meteorMsg += ", +" + this.game.getDisplayValueExt(mineralsGain) + " minerals";
-				}
-				if (sciGain > 0) {
-					meteorMsg += ", +" + this.game.getDisplayValueExt(sciGain) + " science";
+				if (mineralsGain > 0 && sciGain > 0){
+					meteorMsg = $I.fmt("msg.event.meteor.both", meteorParams,
+						"A meteor fell near the village, +{minerals} minerals, +{science} science!");
+				} else if (mineralsGain > 0){
+					meteorMsg = $I.fmt("msg.event.meteor.minerals", meteorParams,
+						"A meteor fell near the village, +{minerals} minerals!");
+				} else {
+					meteorMsg = $I.fmt("msg.event.meteor.science", meteorParams,
+						"A meteor fell near the village, +{science} science!");
 				}
 
-				this.game.msg(meteorMsg + "!", null, "meteor");
+				this.game.msg(meteorMsg, null, "meteor");
 			}
 
 			//TODO: make meteors give titanium on higher levels
@@ -638,7 +646,7 @@ dojo.declare("com.nuclearunicorn.game.Calendar", null, {
 		if (this.game.rand(10000) < meteorChance * unicornChanceRatio){
 
 			var ivory = (250 + this.game.rand(1500) * (1 + this.game.getEffect("ivoryMeteorRatio")));
-			this.game.msg("Ivory Meteor fell near the village, +" + ivory.toFixed() + " ivory!", "notice", "ivoryMeteor");
+			this.game.msg($I.fmt("msg.event.ivoryMeteor", {amount: ivory.toFixed()}, "Ivory Meteor fell near the village, +{amount} ivory!"), "notice", "ivoryMeteor");
 
 			this.game.resPool.addResEvent("ivory", ivory);
 		}

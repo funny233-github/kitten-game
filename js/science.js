@@ -889,7 +889,7 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.Library", com.nuclearunicorn.game.u
 			this.render(tabContainer);
 		});
 
-		dojo.create("label", { innerHTML: "Hide researched techs", for: "toggleResearched"}, div);
+		dojo.create("label", { innerHTML: $I.ui("Hide researched techs"), for: "toggleResearched"}, div);
 		//---------------------------------------------------------------------
 
 		var table = dojo.create("table", { className: "table", style:{

@@ -222,14 +222,14 @@ dojo.declare("classes.managers.Achievements", com.nuclearunicorn.core.TabManager
             var ach = this.achievements[i];
             if (!ach.unlocked && dojo.hitch(this, ach.condition)()) {
                 ach.unlocked = true;
-                this.game.msg("Achievement unlocked: " + ach.title + "!");
+                this.game.msg($I.fmt("msg.ach.unlocked", {title: ach.title}, "Achievement unlocked: {title}!"));
                 this.game.achievementTab.visible = true;
 
                 this.updateStatistics();
             }
             if (ach.hasStar && !ach.starUnlocked && dojo.hitch(this, ach.starCondition)()) {
                 ach.starUnlocked = true;
-                this.game.msg("Achievement star unlocked: " + ach.title + "!");
+                this.game.msg($I.fmt("msg.ach.starUnlocked", {title: ach.title}, "Achievement star unlocked: {title}!"));
                 this.game.achievementTab.visible = true;
 
                 this.updateStatistics();
@@ -302,6 +302,6 @@ dojo.declare("com.nuclearunicorn.game.ui.tab.AchTab", com.nuclearunicorn.game.ui
 				title: ach.starUnlocked ? ach.starDescription : "???"
 			}, span);
 		}
-        divHeader.innerHTML = "Achievements: " + completedAchievements + " of " + totalAchievements;
+        divHeader.innerHTML = $I.fmt("msg.ach.header", {done: completedAchievements, total: totalAchievements}, "Achievements: {done} of {total}");
 	}
 });

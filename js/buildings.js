@@ -943,7 +943,12 @@ dojo.declare("classes.managers.BuildingsManager", com.nuclearunicorn.core.TabMan
 					if (autoIron > game.workshop.getCraft("plate").prices[0].val){
 						var amt = Math.floor(autoIron / game.workshop.getCraft("plate").prices[0].val);
 						game.workshop.craft("plate", amt);
-						game.msg("Spent " + game.getDisplayValueExt(autoIron) + " iron, +" + game.getDisplayValueExt(amt + amt * ratio) + " plates!", null, "workshopAutomation", true);
+						game.msg($I.fmt("msg.auto.craft", {
+							spent: game.getDisplayValueExt(autoIron),
+							amount: game.getDisplayValueExt(amt + amt * ratio),
+							resource: game.resPool.get("iron").name,
+							product: game.resPool.get("plate").name
+						}, "Spent {spent} {resource}, +{amount} {product}!"), null, "workshopAutomation", true);
 					}
 				}
 
@@ -952,7 +957,12 @@ dojo.declare("classes.managers.BuildingsManager", com.nuclearunicorn.core.TabMan
 					if (autoMinerals > game.workshop.getCraft("slab").prices[0].val){
 						var amt = Math.floor(autoMinerals / game.workshop.getCraft("slab").prices[0].val);
 						game.workshop.craft("slab", amt);
-						game.msg("Spent " + game.getDisplayValueExt(autoMinerals) + " minerals, +" + game.getDisplayValueExt(amt + amt * ratio) + " slabs!", null, "workshopAutomation", true);
+						game.msg($I.fmt("msg.auto.craft", {
+							spent: game.getDisplayValueExt(autoMinerals),
+							amount: game.getDisplayValueExt(amt + amt * ratio),
+							resource: game.resPool.get("minerals").name,
+							product: game.resPool.get("slab").name
+						}, "Spent {spent} {resource}, +{amount} {product}!"), null, "workshopAutomation", true);
 					}
 				}
 
@@ -961,7 +971,12 @@ dojo.declare("classes.managers.BuildingsManager", com.nuclearunicorn.core.TabMan
 					if (autoWood >= game.workshop.getCraft("beam").prices[0].val){
 						var amt = Math.floor(autoWood / game.workshop.getCraft("beam").prices[0].val);
 						game.workshop.craft("beam", amt);
-						game.msg("Spent " + game.getDisplayValueExt(autoWood) + " wood, +" + game.getDisplayValueExt(amt + amt * ratio) + " beams!", null, "workshopAutomation", true);
+						game.msg($I.fmt("msg.auto.craft", {
+							spent: game.getDisplayValueExt(autoWood),
+							amount: game.getDisplayValueExt(amt + amt * ratio),
+							resource: game.resPool.get("wood").name,
+							product: game.resPool.get("beam").name
+						}, "Spent {spent} {resource}, +{amount} {product}!"), null, "workshopAutomation", true);
 					}
 				}
 
@@ -1893,7 +1908,7 @@ dojo.declare("classes.ui.btn.StagingBldBtn", classes.ui.btn.BuildingBtnModern, {
 				//downgrade
 				this.stageLinks.push(
 					this.addLink("v",function(){
-						if (confirm('Do you want to downgrade this building?\n\nYou will lose all of those currently built.')){
+						if (confirm($I.ui('Do you want to downgrade this building?\n\nYou will lose all of those currently built.'))){
 							bldExt.meta.stage = bldExt.meta.stage -1 || 0;
 							bldExt.meta.val = 0;	//TODO: fix by using separate value flags
 							bldExt.meta.on = 0;
@@ -1912,7 +1927,7 @@ dojo.declare("classes.ui.btn.StagingBldBtn", classes.ui.btn.BuildingBtnModern, {
 				}
 				this.stageLinks.push(
 					this.addLink("^",function(){
-						if (confirm('Do you want to upgrade this building?\n\nYou will lose all of those currently built.')){
+						if (confirm($I.ui('Do you want to upgrade this building?\n\nYou will lose all of those currently built.'))){
 							bldExt.meta.stage = bldExt.meta.stage || 0;
 							bldExt.meta.stage++;
 

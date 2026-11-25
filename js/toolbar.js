@@ -37,7 +37,7 @@ dojo.declare("classes.ui.Toolbar", null, {
 		var sorrowRes = this.game.resPool.get("sorrow"),
 			sorrow = sorrowRes.value;
 		$("#sorrowTooltip").html(sorrow ?
-			"BLS: " + sorrow.toFixed() + "%" :
+			$I.ui("BLS: ") + sorrow.toFixed() + "%" :
 			""
 		);
 		var isMax = (sorrowRes.value == sorrowRes.maxValue);
@@ -122,8 +122,8 @@ dojo.declare("classes.ui.toolbar.ToolbarHappiness", classes.ui.ToolbarIcon, {
 	getTooltip: function(){
 		var base = this.game.getEffect("happiness");
 		//var population = this.game.village.getKittens() *  2;
-		var tooltip = "Base: 100%<br>" +
-			   "Buildings: +" + (Math.floor(base)) + "%<br>";
+		var tooltip = $I.ui("Base: 100%<br>") +
+			   $I.ui("Buildings: +") + (Math.floor(base)) + "%<br>";
 
 		//----------------------
 		var resHappiness = 0;
@@ -136,25 +136,25 @@ dojo.declare("classes.ui.toolbar.ToolbarHappiness", classes.ui.ToolbarIcon, {
 				}
 			}
 		}
-		tooltip += "Rare resources: +" + this.game.getDisplayValueExt(resHappiness, false, false, 0) + "%<br>";
+		tooltip += $I.ui("Rare resources: +") + this.game.getDisplayValueExt(resHappiness, false, false, 0) + "%<br>";
 		//---------------------
 		var karma = this.game.resPool.get("karma");
 		if (karma.value > 0){
-			tooltip += "Karma: +" + this.game.getDisplayValueExt(karma.value, false, false, 0) + "%<br>";
+			tooltip += $I.ui("Karma: +") + this.game.getDisplayValueExt(karma.value, false, false, 0) + "%<br>";
 		}
 
         var unhappiness = ( this.game.village.getKittens()-5 ) * 2;
         var unhappiness = unhappiness;
 
 		var unhappinessReduction = unhappiness * this.game.getEffect("unhappinessRatio", true);
-		tooltip += "Population penalty: -" + this.game.getDisplayValueExt(unhappiness+unhappinessReduction, false, false, 0) + "%<br>";
+		tooltip += $I.ui("Population penalty: -") + this.game.getDisplayValueExt(unhappiness+unhappinessReduction, false, false, 0) + "%<br>";
 
-        tooltip += "* Penalty base: -" + this.game.getDisplayValueExt(unhappiness, false, false, 0) + "%<br>";
-		tooltip += "* Penalty mitigated: " + -this.game.getDisplayValueExt(unhappinessReduction, false, false, 0) + "%<br>";
+        tooltip += $I.ui("* Penalty base: -") + this.game.getDisplayValueExt(unhappiness, false, false, 0) + "%<br>";
+		tooltip += $I.ui("* Penalty mitigated: ") + -this.game.getDisplayValueExt(unhappinessReduction, false, false, 0) + "%<br>";
 
         var overpopulation = this.game.village.getKittens() - this.game.village.maxKittens;
         if (overpopulation > 0){
-            tooltip += "Overpopulation: -" + overpopulation*2 + "%<br>";
+            tooltip += $I.ui("Overpopulation: -") + overpopulation*2 + "%<br>";
         }
 
 
@@ -186,10 +186,10 @@ dojo.declare("classes.ui.toolbar.ToolbarEnergy", classes.ui.ToolbarIcon, {
 		var energy = resPool.energyProd - resPool.energyCons;
 
         var delta = this.game.resPool.getEnergyDelta();
-		var penalty = energy >= 0 ? "" :"<br><br>Production bonuses cuts: <span style='color:red;'>-" + Math.floor( (1-delta) * 100) + "%</span>";
+		var penalty = energy >= 0 ? "" : $I.ui("<br><br>Production bonuses cuts: <span style='color:red;'>-") + Math.floor( (1-delta) * 100) + "%</span>";
 
-		return "Production: <span style='color:green;'>" +  this.game.getDisplayValueExt(resPool.energyProd, true, false) + "Wt</span>" +
-			   "<br>Consumption: <span style='color:#D00000;'>-" +  this.game.getDisplayValueExt(resPool.energyCons) + "Wt</span>" + penalty;
+		return $I.ui("Production: <span style='color:green;'>") +  this.game.getDisplayValueExt(resPool.energyProd, true, false) + "Wt</span>" +
+			   $I.ui("<br>Consumption: <span style='color:#D00000;'>-") +  this.game.getDisplayValueExt(resPool.energyCons) + "Wt</span>" + penalty;
 	}
 });
 
@@ -211,7 +211,7 @@ dojo.declare("classes.ui.toolbar.ToolbarMOTD", classes.ui.ToolbarIcon, {
 		var server = this.game.server;
 		if (server.showMotd && server.motdContent) {
 			server.motdFreshMessage = false;
-			return "Message of the day:<br />" + server.motdContent;
+			return $I.ui("Message of the day:<br />") + server.motdContent;
 		}
 	}
 });
@@ -231,10 +231,10 @@ dojo.declare("classes.ui.toolbar.ToolbarDonations", classes.ui.ToolbarIcon, {
 		var bonus = this.game.getCMBRBonus() * 100;
 
 		if (this.game.opts.disableCMBR){
-			return "Production bonus disabled";
+			return $I.ui("Production bonus disabled");
 		}
 
-		return "Production bonus: " +  this.game.getDisplayValueExt(bonus, true, false) + "%" +
-			"<br>Storage bonus: " + this.game.getDisplayValueExt(bonus, true, false) + "%";
+		return $I.ui("Production bonus: ") +  this.game.getDisplayValueExt(bonus, true, false) + "%" +
+			$I.ui("<br>Storage bonus: ") + this.game.getDisplayValueExt(bonus, true, false) + "%";
 	}
 });

@@ -62,6 +62,8 @@
 
 				var modules = [
 				    "core",
+					"js/i18n",
+					"js/i18n.zh",
 					"js/resources",
 					"js/calendar",
 					"js/buildings",
@@ -88,6 +90,7 @@
 				def.then(function() {
 					try {
 						gamePage = game = new com.nuclearunicorn.game.ui.GamePage();
+						$I.init(gamePage);
 						gamePage.setUI(new classes.ui.DesktopUI("gameContainerId"));
 
 						gamePage.load();
@@ -189,10 +192,10 @@
 						<div id="devPanelFPS">
 						</div>
 						<div id="devPanelCheats" style="display:none">
-							<a href="#" onclick="gamePage.science.unlockAll();">All techs</a>
-							<a href="#" onclick="gamePage.workshop.unlockAll();">All upgrades</a>
-							<a href="#" onclick="gamePage.resPool.maxAll();">All resources</a>
-                            <a href="#" onclick="gamePage.bld.devAddStorage();">More storage</a>
+							<a href="#" onclick="gamePage.science.unlockAll();" data-i18n="ui.allTechs">All techs</a>
+							<a href="#" onclick="gamePage.workshop.unlockAll();" data-i18n="ui.allUpgrades">All upgrades</a>
+							<a href="#" onclick="gamePage.resPool.maxAll();" data-i18n="ui.allResources">All resources</a>
+                            <a href="#" onclick="gamePage.bld.devAddStorage();" data-i18n="ui.moreStorage">More storage</a>
 						</div>
 					</div>
 
@@ -202,25 +205,26 @@
 					<div id="headerToolbar" style="font-size: 12px; display: inline-block">
 						<!-- toolbar panel goes there -->
 					</div>
-					<span id="energyTooltip" style="padding-right: 15px; font-size: 12px;" title="Energy"></span>
-					<span id="sorrowTooltip" style="padding-right: 15px; font-size: 12px;" title="Black liquid sorrow"></span>
-					<span id="autosaveTooltip" style="padding-right: 15px; font-size: 12px; opacity: 0;">autosaving...</span>
-					<span id="saveTooltip" style="padding-right: 15px; font-size: 12px; opacity: 0;">Saved!</span>
+					<span id="energyTooltip" style="padding-right: 15px; font-size: 12px;" title="Energy" data-i18n-title="ui.energyTitle"></span>
+					<span id="sorrowTooltip" style="padding-right: 15px; font-size: 12px;" title="Black liquid sorrow" data-i18n-title="ui.sorrowTitle"></span>
+					<span id="autosaveTooltip" style="padding-right: 15px; font-size: 12px; opacity: 0;" data-i18n="ui.autosaving">autosaving...</span>
+					<span id="saveTooltip" style="padding-right: 15px; font-size: 12px; opacity: 0;" data-i18n="ui.saved">Saved!</span>
 
-					<a href="#" onclick="gamePage.saveUI();">Save</a> |
-					<a href="#" onclick="$('#optionsDiv').toggle();">Options</a> |
-					<a href="#" onclick="gamePage.reset();">Reset</a> |
+					<a href="#" onclick="gamePage.saveUI();" data-i18n="ui.save">Save</a> |
+					<a href="#" onclick="$('#optionsDiv').toggle();" data-i18n="ui.options">Options</a> |
+					<a href="#" onclick="$('#langDiv').toggle();" data-i18n="ui.language">Language</a> |
+					<a href="#" onclick="gamePage.reset();" data-i18n="ui.reset">Reset</a> |
 					<span id="devModeButton" style="display: none;"><a href="#" id="devBtn" onclick="dev();">DEV</a> |</span>
-					<a href="#" onclick="wipe();">Wipe</a> |
+					<a href="#" onclick="wipe();" data-i18n="ui.wipe">Wipe</a> |
 
 					<a href="#" onclick="$('#changelogDiv').toggle();">Ver 1.4.0.1</a>
 
 				</div>
 			</div>
 			<div id="changelogDiv" class="dialog help" style="display: none; z-index: 9999">
-				<a href="#" onclick="$('#changelogDiv').hide();" style="position: absolute; top: 10px; right: 15px;">close</a>
+				<a href="#" onclick="$('#changelogDiv').hide();" style="position: absolute; top: 10px; right: 15px;" data-i18n="ui.close">close</a>
 
-				<b>Changelog/features:</b>
+				<b data-i18n="ui.changelog">Changelog/features:</b>
 				<br>
 				<pre>
 					Version: 1
@@ -238,7 +242,7 @@
 						Balance tweaks
 
 				</pre>
-				<a href="changelog.txt" target="_blank" style="position: relative; top: -15px;">full changelog</a>
+				<a href="changelog.txt" target="_blank" style="position: relative; top: -15px;" data-i18n="ui.fullChangelog">full changelog</a>
 			</div>
 
 			<div id="game" class="pure-g">
@@ -246,8 +250,8 @@
 
 				<!-- LEFT -->
 				<div id="leftColumn" class="column" style="vertical-align: top;">
-					<div style="float:left;"><a href="#" style="padding-left:2px;" onclick="gamePage.resPool.setDisplayAll();">Show All</a></div>
-					<div style="float:left;"><a href="#" style="padding-left:8px;" onclick="gamePage.resPool.toggleLock();">Lock/Unlock</a></div>
+					<div style="float:left;"><a href="#" style="padding-left:2px;" onclick="gamePage.resPool.setDisplayAll();" data-i18n="ui.showAll">Show All</a></div>
+					<div style="float:left;"><a href="#" style="padding-left:8px;" onclick="gamePage.resPool.toggleLock();" data-i18n="ui.lockUnlock">Lock/Unlock</a></div>
 					<div style="float:right; margin-right:-13px;"><a href="#" style="padding-right:2px;" onclick="gamePage.ui.zoomDown();">&ndash;</a>/<a href="#" onclick="gamePage.ui.zoomUp();">+</a></div>
 
 					<div id="resContainer" style="padding-top: 15px; width: 100%">
@@ -269,9 +273,9 @@
 				<!-- MID -->
 				<div id="midColumn" style="vertical-align: top;" class="column">
 					<div id="gameContainerId" style="border: 1px solid gray;">
-						<span style="font-size:18px;"><img src="res/ajax-loader.gif">&nbsp;Loading...<br></span>
+						<span style="font-size:18px;"><img src="res/ajax-loader.gif">&nbsp;<span data-i18n="ui.loading">Loading...</span><br></span>
 						<br>
-						<div style="font-size:12px; color: gray;">
+						<div style="font-size:12px; color: gray;" data-i18n="ui.loadingHelp">
 							If this takes to much time, most likely it is not working. But don't worry.<br>
 							<ul>
 								<li>Try to refresh the game by pressing Ctrl+F5.</li>
@@ -289,24 +293,24 @@
 						<a id="dev_boostCalendar" href="#" onclick="dev_boostCalendar();" style="display: none; text-decoration: none; position: relative; left: 5px;">&gt;&gt;&gt;</a>
 					</div>
 					<div class="right-tab-header">
-						<a href="#" onclick="gamePage.ui.hideChat();">Log</a>&nbsp;|
-						<a href="#" onclick="gamePage.ui.loadChat();">Chat</a>
+						<a href="#" onclick="gamePage.ui.hideChat();" data-i18n="ui.log">Log</a>&nbsp;|
+						<a href="#" onclick="gamePage.ui.loadChat();" data-i18n="ui.chat">Chat</a>
 					</div>
 					<div id="observeButton" style="text-align: center; margin-top: 5px; height: 30px;"></div>
 					<div class="right-tab" id="rightTabLog">
 						<div>
-							<div style="padding-top: 10px; border-top: 1px solid gray;">
+							<div style="padding-top: 10px; border-top: 1px solid gray;" data-i18n="ui.intro">
 								You are a kitten in a catnip forest.
 							</div>
 
 							<span id="clearLog">
-								<a id="clearLogHref" href="#" onClick="gamePage.clearLog();">Clear log</a>
+								<a id="clearLogHref" href="#" onClick="gamePage.clearLog();" data-i18n="ui.clearLog">Clear log</a>
 							</span>
 							<span id="logFiltersBlock" style="padding-top: 5px">
-								<a onclick="gamePage.toggleFilters();" href="#">[<span id="filterIcon">+</span>] Log Filters</a>
+								<a onclick="gamePage.toggleFilters();" href="#">[<span id="filterIcon">+</span>] <span data-i18n="ui.logFilters">Log Filters</span></a>
 							</span>
-							<a id="pauseBtn" style="font-size: 12px;" href="#" title="Pause/unpause the game" onclick="gamePage.togglePause();">pawse</a>
-							<a id="undoBtn" style="font-size: 12px;" href="#" title="Undo the change" onclick="gamePage.undo();">undo</a>
+							<a id="pauseBtn" style="font-size: 12px;" href="#" title="Pause/unpause the game" data-i18n-title="ui.pauseTitle" onclick="gamePage.togglePause();">pawse</a>
+							<a id="undoBtn" style="font-size: 12px;" href="#" title="Undo the change" data-i18n-title="ui.undoTitle" onclick="gamePage.undo();">undo</a>
 
 							<div id="logFilters" style="display:none">
 							</div>
@@ -316,7 +320,7 @@
 						</div>
 					</div>
 					<div class="right-tab" id="rightTabChat" style="display:none;">
-						<div id="IRCChatInner">CHAT GOES THERE</div>
+						<div id="IRCChatInner" data-i18n="ui.chatPlaceholder">CHAT GOES THERE</div>
 					</div>
 				</div>
 				<!-- ADS -->
@@ -338,7 +342,8 @@
 			</div>
 
 			<div id="helpDiv" style="display: none" class="dialog help">
-				<a href="#" onclick="$('#helpDiv').hide();" style="position: absolute; top: 10px; right: 15px;">close</a>
+				<a href="#" onclick="$('#helpDiv').hide();" style="position: absolute; top: 10px; right: 15px;" data-i18n="ui.close">close</a>
+				<div data-i18n="ui.helpBody">
 				<ul>
 					<li>Q: The game is not working!</li>
 					<li>A: Press Ctrl+F5. Wiping and re-importing the save may also help.</li>
@@ -352,10 +357,11 @@
 					<li>Q: This game is too slow!</li>
 					<li>A: Things will be better. Just try to think creatively and prioritise goals.</li>
 				</ul>
+				</div>
 			</div>
 
 			<div id="creditsDiv" style="display: none" class="dialog credits">
-				<a href="#" onclick="$('#creditsDiv').hide();" style="position: absolute; top: 10px; right: 15px;">close</a>
+				<a href="#" onclick="$('#creditsDiv').hide();" style="position: absolute; top: 10px; right: 15px;" data-i18n="ui.close">close</a>
 
 				Sleek CSS theme by Kida, Grassy CSS theme by <a href="http://www.reddit.com/user/shrx" target="_blank">shrx</a> <br/>
 
@@ -392,19 +398,19 @@
 			<div id="optionsDiv" style="display: none; height: 360px; margin-top:-180px" class="dialog help">
 				<a href="#" onclick="gamePage.closeOptions()" style="position: absolute; top: 10px; right: 15px;">close</a>
 
-				<label for="schemeToggle">Color scheme:</label>
+				<label for="schemeToggle" data-i18n="ui.colorScheme">Color scheme:</label>
 				<!-- <input id="schemeToggle" type="checkbox" onclick="gamePage.toggleScheme()"> Inverted <br><br><br> -->
 				<select id="schemeToggle" onchange="gamePage.toggleScheme()">
-					<option value="">Classic</option>
-					<option value="dark">Inverted</option>
-					<option value="grassy">Grassy</option>
-					<option value="sleek">Sleek (By Kida)</option>
+					<option value="" data-i18n="ui.schemeClassic">Classic</option>
+					<option value="dark" data-i18n="ui.schemeInverted">Inverted</option>
+					<option value="grassy" data-i18n="ui.schemeGrassy">Grassy</option>
+					<option value="sleek" data-i18n="ui.schemeSleek">Sleek (By Kida)</option>
 				</select>
 				<br>
 				<br>
 
 				<input id="workersToggle" type="checkbox" onclick="gamePage.useWorkers = $('#workersToggle')[0].checked;">
-				<label for="workersToggle">Use web worker
+				<label for="workersToggle" data-i18n="ui.useWorkers">Use web worker
 					<i>(game works correctly in background tab, may cause performance issues)
 						<br>
 						You need to refresh the browser page for this setting to take effect.
@@ -412,70 +418,85 @@
 				<br>
 
 				<input id="forceHighPrecision" type="checkbox" onclick="gamePage.forceHighPrecision = $('#forceHighPrecision')[0].checked;">
-				<label for="forceHighPrecision">Use high precision for resource values</label>
+				<label for="forceHighPrecision" data-i18n="ui.highPrecision">Use high precision for resource values</label>
 				<br>
 
 				<input id="usePerSecondValues" type="checkbox" onclick="gamePage.opts.usePerSecondValues = $('#usePerSecondValues')[0].checked;">
-				<label for="usePerSecondValues">Use per second values <i>(per tick otherwise)</i></label>
+				<label for="usePerSecondValues" data-i18n="ui.perSecondValues">Use per second values <i>(per tick otherwise)</i></label>
 				<br>
 				<input id="usePercentageResourceValues" type="checkbox" onclick="gamePage.opts.usePercentageResourceValues = $('#usePercentageResourceValues')[0].checked;">
-				<label for="usePercentageResourceValues">Use percentage resource production values</label>
+				<label for="usePercentageResourceValues" data-i18n="ui.percentageValues">Use percentage resource production values</label>
 				<br>
 				<input id="highlightUnavailable" type="checkbox" onclick="gamePage.opts.highlightUnavailable = $('#highlightUnavailable')[0].checked;">
-				<label for="highlightUnavailable">Highlight buildings limited by storage space</label>
+				<label for="highlightUnavailable" data-i18n="ui.highlightUnavailable">Highlight buildings limited by storage space</label>
 				<br>
 				<input id="hideSell" type="checkbox" onclick="gamePage.opts.hideSell = $('#hideSell')[0].checked;">
-				<label for="hideSell">Hide 'sell' buttons</label>
+				<label for="hideSell" data-i18n="ui.hideSell">Hide 'sell' buttons</label>
 				<br>
 				<input id="disableCMBR" type="checkbox" onclick="gamePage.opts.disableCMBR = $('#disableCMBR')[0].checked;">
-				<label for="disableCMBR">Disable global donate bonus.</label>
+				<label for="disableCMBR" data-i18n="ui.disableCMBR">Disable global donate bonus.</label>
 				<br>
 				<input id="disableTelemetry" type="checkbox" onclick="gamePage.opts.disableTelemetry = $('#disableTelemetry')[0].checked;">
-				<label for="disableTelemetry">Disable game statistics.</label>
+				<label for="disableTelemetry" data-i18n="ui.disableTelemetry">Disable game statistics.</label>
 				<br>
                 <br>
 
-                <a href="#" onclick="$('.optsExtra').show();">More...</a>
+                <a href="#" onclick="$('.optsExtra').show();" data-i18n="ui.more">More...</a>
 				<!-- looks like a to niche option to occupy entire setting slot -->
 				<div class="optsExtra" style="display:none">
 					<input id="noConfirm" type="checkbox" onclick="gamePage.opts.noConfirm = $('#noConfirm')[0].checked;">
-					<label for="noConfirm">Do not confirm when clearing all jobs</label>
+					<label for="noConfirm" data-i18n="ui.noConfirm">Do not confirm when clearing all jobs</label>
 					<br>
                     <input id="IWSmelter" type="checkbox" onclick="gamePage.opts.IWSmelter = $('#IWSmelter')[0].checked;">
-                    <label for="IWSmelter">Smelters turn off at 95% max Iron in Iron Will mode</label>
+                    <label for="IWSmelter" data-i18n="ui.iwSmelter">Smelters turn off at 95% max Iron in Iron Will mode</label>
                     <br>
 				</div>
 
 				<br>
 				<br>
-				<input type="button" value="Export" onclick="gamePage.saveExport();">
+				<input type="button" value="Export" data-i18n-value="ui.export" onclick="gamePage.saveExport();">
 
-				<input type="button" value="Import" onclick="$('#importData').val(''); $('#importDiv').show();" style="margin-top: 10px;">
+				<input type="button" value="Import" data-i18n-value="ui.import" onclick="$('#importData').val(''); $('#importDiv').show();" style="margin-top: 10px;">
 				<br>
+			</div>
+
+			<div id="langDiv" style="display: none; height: 220px; margin-top:-110px" class="dialog help">
+				<a href="#" onclick="$('#langDiv').hide();" style="position: absolute; top: 10px; right: 15px;" data-i18n="ui.close">close</a>
+
+				<label for="langToggle" data-i18n="ui.languageLabel">Language:</label>
+				<select id="langToggle" onchange="gamePage.setLanguage(this.value)">
+					<option value="en">English</option>
+					<option value="zh">中文</option>
+				</select>
+				<br>
+				<br>
+				<div style="font-size: 12px; color: gray;">
+					<i data-i18n="ui.languageNote">Changing the language saves the game and reloads the page.</i>
+				</div>
 			</div>
 
 			<div id="exportDiv" style="display: none" class="dialog help">
-				<h1>Export To:</h1>
+				<h1 data-i18n="ui.exportTo">Export To:</h1>
 				<input type="button" onclick="gamePage.saveExportDropbox();" value="Dropbox (Beta)">
 				<br>
-				<h1>Text Export:</h1>
+				<h1 data-i18n="ui.textExport">Text Export:</h1>
 				<br>
 				<textarea id="exportData" style="width: 550px; height: 220px;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 				<br>
-				<input type="button" value="Close" onclick="$('#exportDiv').hide();" style="margin-top: 10px;">
+				<input type="button" value="Close" data-i18n-value="ui.close" onclick="$('#exportDiv').hide();" style="margin-top: 10px;">
 			</div>
 
 			<div id="importDiv" style="display: none" class="dialog help">
-				<div>Warning! Importing data will overwrite your current game data.</div>
-				<h1>Import Form:</h1>
+				<div data-i18n="ui.importWarning">Warning! Importing data will overwrite your current game data.</div>
+				<h1 data-i18n="ui.importForm">Import Form:</h1>
 				<input type="button" onclick="gamePage.saveImportDropbox();" value="Dropbox (Beta)">
 				<br>
-				<h1>Text Import:</h1>
+				<h1 data-i18n="ui.textImport">Text Import:</h1>
 				<br>
 				<textarea id="importData" style="width: 550px; height: 220px;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 				<br>
-				<input type="button" value="Import" onclick="gamePage.saveImport(); $('#importDiv').hide();" style="margin-top: 10px;">
-				<input type="button" value="Cancel" onclick="$('#importDiv').hide();" style="margin-top: 10px;">
+				<input type="button" value="Import" data-i18n-value="ui.import" onclick="gamePage.saveImport(); $('#importDiv').hide();" style="margin-top: 10px;">
+				<input type="button" value="Cancel" data-i18n-value="ui.cancel" onclick="$('#importDiv').hide();" style="margin-top: 10px;">
 
 			</div>
 
@@ -483,9 +504,9 @@
 				<a href="http://www.reddit.com/r/kittensgame/" target="_blank">reddit</a> |
 				<a href="http://bloodrizer.ru/games/kittens/wiki/" target="_blank">wiki</a> |
 				<!-- <a href="http://kittensgame.tumblr.com" target="_blank">tumblr</a> | -->
-				<a href="#" onclick="$('#helpDiv').toggle();">help</a> |
-				<a href="#" onclick="$('#creditsDiv').toggle();">credits</a> |
-				<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=82FJX5M8M3GVN" target="_blank">donate</a> <!-- |
+				<a href="#" onclick="$('#helpDiv').toggle();" data-i18n="ui.help">help</a> |
+				<a href="#" onclick="$('#creditsDiv').toggle();" data-i18n="ui.credits">credits</a> |
+				<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=82FJX5M8M3GVN" target="_blank" data-i18n="ui.donate">donate</a> <!-- |
 				<a href="classic/" target="_blank">classic</a> -->
 			</div>
 		</div>
